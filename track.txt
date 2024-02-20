@@ -1,0 +1,10 @@
+Features:-
+
+Imp:
+  i)Option for GUI
+  ii)Option for kicking out clients.
+
+Semi-imp:
+  i)Option for file transfer using FTP.
+  ii)Option for audio transfer Http.
+    ->We also need to 
