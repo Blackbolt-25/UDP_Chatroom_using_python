@@ -4,7 +4,7 @@ import random
 
 
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-client.bind(("Localhost" , random.randint(8000,9000)))
+client.bind(("192.168.82.142" , random.randint(8000,9000)))
 
 name = input("Nickname :")
 
@@ -20,7 +20,7 @@ def receive():
 t = threading.Thread(target=receive)
 t.start()
 
-client.sendto(f"SIGNUP_TAG:{name}".encode() , ("localhost",9999))
+client.sendto(f"SIGNUP_TAG:{name}".encode() , ("192.168.82.48",9999))
 
 
 while True:
@@ -28,6 +28,6 @@ while True:
     if message == "!q":
         exit()
     else:
-        client.sendto(f"{name}: {message}".encode(), ("localhost", 9999))
+        client.sendto(f"{name}: {message}".encode(), ("192.168.82.48",9999))
 
 
