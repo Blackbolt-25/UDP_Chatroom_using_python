@@ -1,10 +1,10 @@
 Features:-
 
 Imp:
-  i)Option for GUI
-  ii)Option for kicking out clients.
+  i)Option for GUI (Not req)
+  ii)Option for kicking out clients. (Req)
+  iii)Option that I am doing now (Can be done)
 
 Semi-imp:
-  i)Option for file transfer using FTP.
-  ii)Option for audio transfer Http.
-    ->We also need to 
+  i)Option for file transfer using FTP. (Shashwat)
+  ii)Option for audio transfer Http. (Not req)

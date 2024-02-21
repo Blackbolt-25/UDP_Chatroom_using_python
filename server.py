@@ -6,7 +6,7 @@ messages = queue.Queue()
 clients = []
 
 server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server.bind(("localhost",5050))
+server.bind(("localhost",9999))
 
 def receive():  
     while True:
@@ -24,11 +24,23 @@ def broadcast():
             print(message.decode())
             if addr not in clients:
                 clients.append(addr)
+                mes = """Welcome to the UDP Chatroom
+                        Instructions:-
+                            1.Please be friendly to everyone in the chatroom.
+                            2.To exit just type "Exit".
+                            3.Remeber the admin can always kick you for misbehaving.
+                            4.If you want to complain about a user. 
+                                Type "Complain: <Enter> (Type the rest of your complaint) """
+                server.sendto(mes.encode(),addr)
             for client in clients:
                 try:
                     if message.decode().startswith("SIGNUP_TAG"):
                         name = message.decode()[message.decode().index(":")+1:]
                         server.sendto(f"{name} joined!".encode(),client)
+                    elif message.decode().startswith("exit"):                #For exiting
+                        name = message.decode()[message.decode().index(":")+1:]
+                        server.sendto(f"{name} has left the Chatroom!".encode(),client)
+                        clients.remove(client)
                     else:
                         server.sendto(message,client)
                 except:
