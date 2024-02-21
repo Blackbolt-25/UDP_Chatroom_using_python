@@ -25,12 +25,12 @@ def broadcast():
             if addr not in clients:
                 clients.append(addr)
                 mes = """Welcome to the UDP Chatroom
-                        Instructions:-
-                            1.Please be friendly to everyone in the chatroom.
-                            2.To exit just type "Exit".
-                            3.Remeber the admin can always kick you for misbehaving.
-                            4.If you want to complain about a user. 
-                                Type "Complain: <Enter> (Type the rest of your complaint) """
+    Instructions:-
+    1.Please be friendly to everyone in the chatroom.
+    2.To exit just type "Exit".
+    3.Remeber the admin can always kick you for misbehaving.
+    4.If you want to complain about a user. 
+    Type "Complain: <Enter> (Type the rest of your complaint)\n\n """
                 server.sendto(mes.encode(),addr)
             for client in clients:
                 try:

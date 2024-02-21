@@ -2,7 +2,7 @@ import socket
 import threading
 import random
 
-
+greeting = 1
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 client.bind(("localhost" , random.randint(8000,9000)))
 
@@ -21,9 +21,12 @@ t = threading.Thread(target=receive)
 t.start()
 
 client.sendto(f"SIGNUP_TAG:{name}".encode() , ("localhost",9999))
-message, _ = client.recvfrom(1024)
-print(message.decode(),end='\r')
-print()
+
+if (greeting):
+    message, _ = client.recvfrom(1024)
+    print(message.decode(),end='\r')
+    print()
+    greeting = 0
 
 while True:
     print(name," : ",end="")
