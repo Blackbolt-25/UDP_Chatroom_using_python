@@ -3,7 +3,6 @@ Features:-
 Imp:
   i)Option for GUI (Not req)
   ii)Option for kicking out clients. (Req)
-  iii)Option that I am doing now (Can be done)
 
 Semi-imp:
   i)Option for file transfer using FTP. (Shashwat)
