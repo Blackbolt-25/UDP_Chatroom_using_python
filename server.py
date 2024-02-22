@@ -5,7 +5,6 @@ import queue
 messages = queue.Queue()
 clients = []
 client_2 = []
-global kick_v  
 
 
 server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -44,8 +43,8 @@ def broadcast():
                         name = message.decode()[message.decode().index(":")+1:]
                         server.sendto(f"{name} has left the Chatroom!".encode(),client)
                         clients.remove(client)
-                    elif message.decode().startwith("Kick"):
-                        kick(message)
+                    # elif message.decode().startwith("Kick"):
+                    #     kick(message)
                     else:
                         server.sendto(message,client)
                 except:

@@ -1,7 +1,12 @@
 import socket
 import threading
 import random
+import netifaces
 import sys
+
+#To get the ip addr of en0
+addrs = netifaces.ifaddresses('en0')
+ip_addr = addrs[netifaces.AF_INET][0]['addr']
 
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 client.bind(("localhost" , random.randint(8000,9000)))
@@ -13,9 +18,6 @@ def receive():
         try:
             message, _ = client.recvfrom(1024)
             sys.stdout.write('\r')
-            # if(message.decode().startswith("Kick")):
-            #     kick()
-            # else:
             print(message.decode())
         except:
             pass
@@ -41,7 +43,6 @@ while True:
 
 
 def kick(message):
-    # to_be_kicked = message.decode()[message.decode().index("requested") + 10 : message.decode().index("to be") - 1]
     print(message.decode()[message.decode().index(":") + 2 :])
     vote = input()
     if(vote in ["yes" , "YES" , "Y" , "y" , "Yes"]):
@@ -63,6 +64,15 @@ def waiter():
         except:
             pass
         
+def get_ip_address():
+    try:
+        addrs = netifaces.ifaddresses('en0')
+        if netifaces.AF_INET in addrs:
+            return addrs[netifaces.AF_INET][0]['addr']
+    except:
+        return "Not found"
+
+
 t2 = threading.Thread(target=waiter)
 t2.start()
 
