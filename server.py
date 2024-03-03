@@ -1,6 +1,7 @@
 import socket 
 import threading
 import queue
+from functools import *
 
 messages = queue.Queue()
 clients = []
@@ -15,46 +16,89 @@ def receive():
             message, addr = server.recvfrom(1024)
             messages.put((message,addr))
         except:
-            pass
+                pass
 
+global cond
+cond = True
 
 def broadcast():
     while True:
         while not messages.empty():
             message,addr = messages.get()
-            try:
-                to_be_kicked = message.decode()[message.decode().index("Kick:") + 2: message.decode().index("from")]
-            except:
-                pass
-            print(message.decode())
-            if addr not in clients:
-                clients.append(addr)
+            if message.decode().startswith("SIGNUP_TAG"):
                 name = message.decode()[message.decode().index(":") + 1 : ]
-                client_2.update({name:addr})
-                greeting(addr)
-            for client in clients:
-                try:
-                    if client == addr:
-                        continue
-                    elif message.decode().startswith("SIGNUP_TAG"):
-                        name = message.decode()[message.decode().index(":")+1:]
-                        server.sendto(f"{name} joined!".encode(),client)
-                    elif message.decode().startswith("exit"):
-                        name = message.decode()[message.decode().index(":")+1:]
-                        server.sendto(f"{name} has left the Chatroom!".encode(),client)
-                        clients.remove(client)
-                    elif message.decode().startswith("Kick"):
-                        list = message.decode().split()
-                        if client == client_2[list[1]]:
-                            server.sendto(f"Kicked: {list[-1]} has kicked you.".encode(),client)
-                            clients.remove[client_2[list[1]]] 
-                            del client_2[list[1]]
+                if addr not in clients and name not in client_2:
+                    clients.append(addr)
+                    name = message.decode()[message.decode().index(":") + 1 : ]
+                    client_2.update({name:addr})
+                    greeting(addr)
+                    cond = True
+                else:
+                    name = message.decode()[message.decode().index(":") + 1 : ]
+                    server.sendto(f"Taken: {name} has already been taken".encode(),addr)
+                    cond = False
+            elif message.decode().startswith("List:"):
+                str1 = reduce(lambda x,y: x + " " + y, client_2)
+                server.sendto(str1.encode(),addr)
+                cond = False
+            elif message.decode().startswith("exit"):
+                name = message.decode()[message.decode().index(":")+1:]
+                clients.remove(addr)
+                del client_2[name]
+                cond = True
+            else:
+                print(message.decode())
+                cond = True
+            if cond:
+                for client in clients:
+                    try:
+                        if client == addr:
+                            continue
+                        elif message.decode().startswith("SIGNUP_TAG") and addr in clients:
+                            name = message.decode()[message.decode().index(":")+1:]
+                            server.sendto(f"{name} joined!".encode(),client)
+                        elif message.decode().startswith("exit"):
+                            name = message.decode()[message.decode().index(":")+1:]
+                            server.sendto(f"{name} has left the Chatroom!".encode(),client)
+                        elif message.decode().startswith("Kick"):
+                            l1 = message.decode().split()
+                            if l1[1] not in client_2:
+                                server.sendto(f"No_exist: {l1[1]} not in the chatroom".encode(),addr)
+                                print(f"{l1[1]} not in the chatroom")
+                                break
+                            if client == client_2[l1[1]]:
+                                server.sendto(f"Kicked: {l1[-1]} has kicked you.".encode(),client)
+                                clients.remove(client_2[l1[1]]) 
+                                del client_2[l1[1]]
+                            else:
+                                server.sendto(f"{l1[-1]} has kicked {l1[1]}".encode(),client)
+                        elif message.decode().startswith("Direct:"):
+                            names = message.decode()[message.decode().find("(") + 1 : message.decode().find(")")]
+                            name = message.decode()[message.decode().rfind(" ") + 1 : ]
+                            names = names.split(",")
+                            names = list(map(str.strip,names))
+                            names = list(filter(lambda x: len(x) != 0 ,names))
+                            names = list(map(lambda x: client_2[x],names))
+                            if client in names:
+                                mes = "(DM) " + name + ": " + message.decode()[message.decode().find(")") + 2: message.decode().rfind(" ")]
+                                server.sendto(mes.encode(),client)
+                        elif message.decode().startswith("Leave:"):
+                            names = message.decode()[message.decode().find("(") + 1 : message.decode().find(")")]
+                            name = message.decode()[message.decode().rfind(" ") + 1 : ]
+                            names = names.split(",")
+                            names = list(map(str.strip,names))
+                            names = list(filter(lambda x: len(x) != 0 ,names))
+                            names = list(map(lambda x: client_2[x],names))
+                            if client not in names:
+                                mes = "(DM) " + name + ": " + message.decode()[message.decode().find(")") + 2: message.decode().rfind(" ")]
+                                server.sendto(mes.encode(),client)
                         else:
-                            server.sendto(f"{list[-1]} has kicked {list[1]}".encode(),client)
-                    else:
-                        server.sendto(message,client)
-                except:
-                    clients.remove(client)
+                            server.sendto(message,client)
+                    except Exception as e:
+                        print(e)
+                        pass
+            cond = True
+
 
 t1 = threading.Thread(target=receive)
 t2 = threading.Thread(target=broadcast)

@@ -11,6 +11,7 @@ ip_addr = addrs[netifaces.AF_INET][0]['addr']
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 client.bind(("localhost" , random.randint(8000,9000)))
 
+global name
 name = input("Nickname :")
 
 
@@ -25,6 +26,18 @@ def receive():
                 cond = False
                 client.close()
                 sys.exit()
+            elif message.decode().startswith("Taken"):
+                print(message.decode()[message.decode().find(":") + 2 :])
+                print("Enter a new username:- ")
+                cond = False
+                client.close()
+                print("Exiting....\n Press Enter \n")
+                sys.exit()
+            elif message.decode().startswith("List:"):
+                mes = (message.decode()[message.decode().find(" ") + 1 : ]).split()
+                print("The list of Clients are:-")
+                for clients in mes:
+                    print(clients,end="\n")
             else:
                 print(message.decode())
         except:
@@ -48,7 +61,16 @@ while True:
         elif message[0:5] == "Kick:":
             message = message + " " + name
             client.sendto(message.encode(),("localhost", 9999))
-            print("Request to kick has been sent to the admin")
+            # print("Request to kick has been sent to the admin")
+        elif message.startswith("Direct:"):
+            message = message + " " + name 
+            client.sendto(message.encode(),("localhost",9999))
+        elif message.startswith("Leave:"):
+            message = message + " " + name 
+            client.sendto(message.encode(),("localhost",9999))
+        elif message.startswith("List:"):
+            message =  message + " " + name 
+            client.sendto(message.encode(),("localhost",9999))
         else:
             client.sendto(f"{name}: {message}".encode(), ("localhost",9999))
     except:
