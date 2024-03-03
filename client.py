@@ -61,7 +61,6 @@ while True:
         elif message[0:5] == "Kick:":
             message = message + " " + name
             client.sendto(message.encode(),("localhost", 9999))
-            # print("Request to kick has been sent to the admin")
         elif message.startswith("Direct:"):
             message = message + " " + name 
             client.sendto(message.encode(),("localhost",9999))
