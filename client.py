@@ -1,12 +1,38 @@
 import socket
 import threading
 import random
-import netifaces
 import sys
 import time
+import subprocess
 
-addrs = netifaces.ifaddresses('en0')
-ip_addr = addrs[netifaces.AF_INET][0]['addr']
+#Netifaces part
+try:
+    import netifaces
+except ModuleNotFoundError:
+    try:
+        result = subprocess.run("pip3 install netifaces", shell=True, capture_output=True, text=True)
+    print(result.stdout)
+    print("Installed netifaces")
+    except ModuleNotFoundError:
+        result = subprocess.run("pip install netifaces", shell=True, capture_output=True, text=True)
+    print(result.stdout)
+    print("Installed netifaces")
+    except:
+        print("pip not installed pls try again after installing")
+        sys.exit()
+
+
+try:
+    addrs = netifaces.ifaddresses('en0')
+    ip_addr = addrs[netifaces.AF_INET][0]['addr']
+except:
+    try:
+        addrs = netifaces.ifaddresses("wireless")
+        ipv4_address = addrs[netifaces.AF_INET][0]['addr']
+    except:
+        print("An error has occured\nPlease put the ip addr manually and try again")
+        sys.exit()
+
 
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 client.bind(("localhost" , random.randint(8000,9000)))
