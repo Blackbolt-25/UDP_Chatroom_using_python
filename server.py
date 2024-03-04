@@ -8,7 +8,7 @@ clients = []
 client_2 = {}
 
 server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server.bind(("localhost",9999))
+server.bind(("192.168.210.142",9999))
 
 def receive():  
     while True:
@@ -32,6 +32,7 @@ def broadcast():
                     name = message.decode()[message.decode().index(":") + 1 : ]
                     client_2.update({name:addr})
                     greeting(addr)
+                    print(message.decode())
                     cond = True
                 else:
                     name = message.decode()[message.decode().index(":") + 1 : ]
@@ -39,6 +40,7 @@ def broadcast():
                     cond = False
             elif message.decode().startswith("List:"):
                 str1 = reduce(lambda x,y: x + " " + y, client_2)
+                str1 = "List:" + str1
                 server.sendto(str1.encode(),addr)
                 cond = False
             elif message.decode().startswith("exit"):
