@@ -2,10 +2,13 @@ import socket
 import threading
 import random
 import sys
-
+import ssl
 
 client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 client.bind(("localhost" , random.randint(8000,9000)))
+
+ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+ssl_context.load_verify_locations("./server.crt")
 
 global name
 name = input("Nickname :")
