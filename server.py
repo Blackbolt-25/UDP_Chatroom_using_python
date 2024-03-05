@@ -2,13 +2,20 @@ import socket
 import threading
 import queue
 from functools import *
+from pydtls import dtls
 
 messages = queue.Queue()
 clients = []
 client_2 = {}
 
-server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+server = dtls.DTLSSocket(dtls.SocketType.DGRAM)
+# server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 server.bind(("localhost",9999))
+
+server_certificate_file = "server.crt"
+server_private_key_file = "server.key"
+
+dtls_socker.load_cert(server_certificate_file,server_private_key_file)
 
 def receive():  
     while True:
