@@ -1,4 +1,8 @@
 ./test
 ./track.txt
 ./notes.txt
+./gitignore
+./__pycache__
+./.git
+./test
 
