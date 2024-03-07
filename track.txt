@@ -1,9 +1,0 @@
-Features:-
-
-Imp:
-  i)Option for GUI (Not req)
-  ii)Option for kicking out clients. (Req)
-
-Semi-imp:
-  i)Option for file transfer using FTP. (Shashwat)
-  ii)Option for audio transfer Http. (Not req)
