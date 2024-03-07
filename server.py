@@ -28,7 +28,7 @@ clients = []
 client_2 = {}
 
 server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server.bind(("192.168.126.142",9999))
+server.bind(("localhost",9999))
 
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 ssl_context.load_cert_chain(certfile="server.crt", keyfile="server.key")
