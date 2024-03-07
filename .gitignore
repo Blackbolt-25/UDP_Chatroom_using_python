@@ -1,8 +1,6 @@
-./test
-./track.txt
-./notes.txt
-./gitignore
-./__pycache__
-./.git
-./test
+test/
+track.txt
+notes.txt
+__pycache__
+# .git
 
