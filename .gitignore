@@ -2,3 +2,4 @@
 #To ignore the test folder
 test1/
 yo/
+.gitignore
