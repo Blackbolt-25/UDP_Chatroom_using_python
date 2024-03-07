@@ -3,21 +3,36 @@ import threading
 import queue
 from functools import *
 import ssl
-# from pydtls import dtls
+import re 
+import os 
+import time
+
+
+def delete_until_file(text):
+    file_index = text.find("FILE:")
+    if file_index != -1:
+        return text[file_index + len("FILE:"):]
+    else:
+        return text
+
+def contains_file_word(sentence):
+    pattern = 'FILE:'
+    if re.search(pattern, sentence):
+        return True
+    else:
+        return False
+
 
 messages = queue.Queue()
 clients = []
 client_2 = {}
 
-# server = dtls.DTLSSocket(dtls.SocketType.DGRAM)
 server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server.bind(("localhost",9999))
+server.bind(("192.168.126.142",9999))
 
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 ssl_context.load_cert_chain(certfile="server.crt", keyfile="server.key")
 
-
-# dtls_socker.load_cert(server_certificate_file,server_private_key_file)
 
 def receive():  
     while True:
@@ -36,7 +51,10 @@ def broadcast():
             message,addr = messages.get()
             if message.decode().startswith("SIGNUP_TAG"):
                 name = message.decode()[message.decode().index(":") + 1 : ]
+
                 if addr not in clients and name not in client_2:
+
+                    print(addr)
                     clients.append(addr)
                     name = message.decode()[message.decode().index(":") + 1 : ]
                     client_2.update({name:addr})
@@ -57,6 +75,30 @@ def broadcast():
                 clients.remove(addr)
                 del client_2[name]
                 cond = True
+            elif contains_file_word(message.decode()):
+                print("file__sending")
+                file_name = delete_until_file(message.decode()).strip()
+
+                file_path = os.path.join(r"/Users/sharodhrao/project/CN_Lab_project", file_name)
+                g=file_name
+                g1="sended->FILE:"+g
+                bytes_data = bytes(g1, 'utf-8')
+                server.sendto(bytes_data, addr)
+
+                with open(file_path, "rb") as file:
+                 while True:
+                    data = file.read(1024)
+                    if data:
+                        print("-")
+                        server.sendto(data, addr)
+                        time.sleep(0.02)
+                    else:
+                        print("*")
+                        server.sendto(b"qend",addr)
+                        break
+                cond=True
+
+
             else:
                 print(message.decode())
                 cond = True
@@ -67,6 +109,7 @@ def broadcast():
                             continue
                         elif message.decode().startswith("SIGNUP_TAG") and addr in clients:
                             name = message.decode()[message.decode().index(":")+1:]
+                            
                             server.sendto(f"{name} joined!".encode(),client)
                         elif message.decode().startswith("exit"):
                             name = message.decode()[message.decode().index(":")+1:]
@@ -122,7 +165,11 @@ def greeting(addr):
     Instructions:-
     1.Please be friendly to everyone in the chatroom.
     2.To exit just type "Exit" <Enter>.
-    3.Remember the admin can always kick you for misbehaving.
-    4.If you want to request to kick a user.
-        Type Kick: <User_name>\n"""
+    3.To make use of the features. Make sure to suffix the keyword with ":".
+        For Ex:-
+        i)"List:" -> for listing the clients available in the chatroom.
+        ii)"Direct: (<client_names>,) <message>" -> To send direct messages.
+        iii)"Leave: (<client_names>,) <messages>" -> To leave the clients and send others the message. 
+        iv)"Kick: <client_name>" -> To kick the given client name.\n
+        """
     server.sendto(mes.encode(),addr)
